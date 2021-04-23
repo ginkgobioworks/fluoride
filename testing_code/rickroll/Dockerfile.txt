@@ -1,0 +1,40 @@
+# Author: jmevorach
+
+FROM ubuntu:latest
+MAINTAINER jacob@ginkgobioworks.com
+
+# ---------------------
+# Update
+# ---------------------
+RUN apt-get update -y
+
+# ---------------------
+# Python stuff
+# ---------------------
+RUN apt-get install -y python3
+RUN apt-get install -y python3-dev
+RUN apt-get install -y python3-pip
+
+# ---------------------
+# PIP INSTALL FLASK
+# ---------------------
+RUN pip3 install flask
+
+# ---------------------
+# PIP INSTALL GUNICORN
+# ---------------------
+RUN pip3 install gunicorn
+
+# ---------------------
+# Copy in our code
+# ---------------------
+COPY main.py /
+COPY wsgi.py /
+
+# ---------------------
+# Entrypoint & Default cmd
+# ---------------------
+EXPOSE 80
+WORKDIR /
+#Always make sure your keep-alive is higher than your idle timeout in your ALB to avoid bugs with gunicorn!
+CMD ["gunicorn", "--keep-alive", "75", "--bind", "0.0.0.0:80", "wsgi:app"]

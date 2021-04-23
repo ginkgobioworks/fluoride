@@ -1,0 +1,1030 @@
+# ________  __                                __        __            __
+#|        \|  \                              |  \      |  \          |  \
+#| $$$$$$$$| $$ __    __   ______    ______   \$$  ____| $$  ______  | $$
+#| $$__    | $$|  \  |  \ /      \  /      \ |  \ /      $$ /      \ | $$
+#| $$  \   | $$| $$  | $$|  $$$$$$\|  $$$$$$\| $$|  $$$$$$$|  $$$$$$\| $$
+#| $$$$$   | $$| $$  | $$| $$  | $$| $$   \$$| $$| $$  | $$| $$    $$ \$$
+#| $$      | $$| $$__/ $$| $$__/ $$| $$      | $$| $$__| $$| $$$$$$$$ __
+#| $$      | $$ \$$    $$ \$$    $$| $$      | $$ \$$    $$ \$$     \|  \
+# \$$       \$$  \$$$$$$   \$$$$$$  \$$       \$$  \$$$$$$$  \$$$$$$$ \$$
+
+#9/10 Dentists Recommend it!
+
+#MICROSERVICES!
+
+#By Jacob Mevorach for Ginkgo Bioworks 2020
+
+Parameters:
+########################RESOURCE NAME PARAMETER START HERE########################
+  MicroServiceName:
+    Type: String
+    Description: The name of your microservice! Should be unique to the AWS account this cloudformation is being deployed in. 21 characters or less please!
+    Default: "microservice"
+########################RESOURCE NAME PARAMETERS END HERE########################
+
+########################TAGGING PARAMETERS START HERE########################
+  ProjectName:
+    Type: String
+    Description: Project Name
+    Default: "fluoride-project"
+  TeamName:
+    Description: Default team name
+    Type: String
+    Default: "fluoride-team"
+  ContactEmail:
+    Type: String
+    Description: Email address of the contact for this project
+    Default: "it@ginkgobioworks.com"
+  WorkloadValue:
+    Type: String
+    Description: The Workloadtype tag value
+    Default: "Dev"
+########################TAGGING PARAMETERS END HERE########################
+
+########################CONTAINER IMAGE PARAMETERS START HERE########################
+  Image:
+    Type: String
+    Description: Update with the Docker image. You can use images in the Docker Hub registry or specify other repositories (repository-url/image:tag).
+    Default: "123456789012.dkr.ecr.region.amazonaws.com/image:tag"
+########################CONTAINER IMAGE PARAMETERS END HERE########################
+
+########################ALB TIMEOUT PARAMETERS START HERE########################
+  ALBIdleTimeout:
+    Type: Number
+    Description: Number of seconds to have ALB wait before timing out idle connections. Default is 60 seconds.
+    Default: 60
+########################ALB TIMEOUT PARAMETERS END HERE########################
+
+########################DYNAMODB PARAMETERS START HERE########################
+  TableName:
+    Type: String
+    Description: Name of the dynamoDB that Fluoride uses to store calls to the architecture.
+    Default: "fluoride-table"
+  TablePrimaryKey:
+    Type: String
+    Description: Name given to the primary key of the DynamoDB table. Defaults to the primary key being called "UUID".
+    Default: "UUID"
+  TableTTLKey:
+    Type: String
+    Description: Name given to the key for the TTL variable for the table. For more information on how TTL works see this documentation from AWS (https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html).
+    Default: "TTL_TIME"
+  ToggleProvisionTable:
+    Type: String
+    Description: True for on; False for off. If False a DynamoDB for this architecture will not be provisioned. If True a DyanmoDB for this architecture will be provisioned. If a DynamoDB table is not provisioned for this architecture the environment variables for "fluoride_dynamodb_table", "fluoride_dynamodb_table_primary_key" and "fluoride_dynamodb_table_ttl_key" will be set to "not_provisioned".
+    AllowedValues: ['True', 'False']
+    Default: 'True'
+  ToggleAutogenerateTableName:
+    Type: String
+    Description: True for on; False for off. If False the name specified by the "TableName" parameter will be used. If True will give a random name to the DynamoDB table for this architecture.
+    AllowedValues: ['True', 'False']
+    Default: 'True'
+########################DYNAMODB PARAMETERS END HERE########################
+
+########################LOGGING PARAMETERS START HERE########################
+  ALBLogS3Bucket:
+    Type: String
+    Description: Name of S3 bucket that will be used to store logs from the ALB.
+    Default: "fluoride-alb-log-s3-bucket"
+  DaysToKeepALBLogs:
+    Type: Number
+    Description: Number of days to keep ALB logs in their designated S3 bucket. Default is for 4 years.
+    Default: 1460
+  ToggleAutogenerateALBLogBucketName:
+    Type: String
+    Description: True for on; False for off. If False the name specified by the "ALBLogS3Bucket" parameter will be used. If True will give a random name.
+    AllowedValues: ['True', 'False']
+    Default: 'True'
+########################LOGGING PARAMETERS END HERE########################
+
+########################S3 PARAMETERS START HERE########################
+  FluorideBucket:
+    Type: String
+    Description: Name of bucket that will be attached to our architecture.
+    Default: "fluoride-bucket"
+  ToggleProvisionFluorideBucket:
+    Type: String
+    Description: True for on; False for off. If False a S3 bucket for this architecture will not be provisioned. If True a S3 bucket for this architecture will be provisioned. If a S3 bucket is not provisioned for this architecture the environment variable for "fluoride_s3_bucket" will be set to "not_provisioned".
+    AllowedValues: ['True', 'False']
+    Default: 'True'
+  ToggleAutogenerateFluorideBucketName:
+    Type: String
+    Description: True for on; False for off. If False the name specified by the "FluorideBucket" parameter will be used. If True will give a random name.
+    AllowedValues: ['True', 'False']
+    Default: 'True'
+########################S3 PARAMETERS START HERE########################
+
+########################SECRETS MANAGER PARAMETERS START HERE########################
+  SecretsManagerName:
+    Type: String
+    Description: Name of the SecretsManager secrets store to store secret files for the architecture.
+    Default: "fluoride-secrets"
+  ToggleProvisionSecretsManager:
+    Type: String
+    Description: True for on; False for off. If False a secrets manager store for this architecture will not be provisioned. If True a secrets manager store for this architecture will be provisioned. If a secrets manager store is not provisioned for this architecture the environment variable for "fluoride_secrets_manager" will be set to "not_provisioned"
+    AllowedValues: ['True', 'False']
+    Default: 'True'
+  ToggleAutogenerateSecretsManagerName:
+    Type: String
+    Description: True for on; False for off. If False the name specified by the "SecretsManagerName" parameter will be used. If True will give a random name.
+    AllowedValues: ['True', 'False']
+    Default: 'True'
+########################SECRETS MANAGER PARAMETERS END HERE########################
+
+########################AUTOSCALING PARAMETERS START HERE########################
+  MinContainers:
+    Type: Number
+    Description: Minimum number of containers that will exist in your architecture.
+    Default: 2
+  MaxContainers:
+    Type: Number
+    Description: Maximum number of containers that will exist in your architecture. While this can be considerably higher than the default value of 100 you should keep in mind that you are limited by the available I.P. space in the subnets you're pulling from.
+    Default: 100
+  AutoScalingTargetValue:
+    Type: Number
+    Description: The percent CPU utilization that the autoscaling policy will try to target.
+    Default: 50
+  ScaleInCooldown:
+    Type: Number
+    Description: Time in seconds to wait after a scaling in activity until another scaling in activity can occur. Must be 0 or a positive integer.
+    Default: 60
+  ScaleOutCooldown:
+    Type: Number
+    Description: Time in seconds to wait after a scaling out activity until another scaling out activity can occur. Must be 0 or a positive integer.
+    Default: 60
+########################ATUOSCALING PARAMETERS END HERE########################
+
+########################CPU&RAM PARAMETERS START HERE########################
+  CPU:
+    Type: String
+    Description: In CPUUnits where 1024 = 1 CPU. This is the value per task and will be scaled horizontally! Be sure to check AWS documentation to see what CPU/RAM combinations are valid (see the information on Fargate allowed values in the "Cpu" section in this, https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-containerdefinitions, document to start)! Minimum is 256 and maximum in 4096.
+    Default: "256"
+  RAM:
+    Type: String
+    Description: In Gb where 1.0GB = 1Gb. This is the value per task and will be scaled horizontally! Be sure to check AWS documentation to see what CPU/RAM combinations are valid (see the information on Fargate allowed values in the "Cpu" section in this, https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-containerdefinitions, document to start)! Minimum is 0.5GB and maximum in 30GB.
+    Default: "0.5GB"
+########################CPU&RAM PARAMETERS END HERE########################
+
+########################HEALTHCHECK PARAMETERS START HERE########################
+  HealthCheckIntervalSeconds:
+    Type: Number
+    Description: How long the architecture will wait in seconds between performing healthchecks on your targets.
+    Default: 120
+  HealthCheckGracePeriodSeconds:
+    Type: Number
+    Description: How long the architecture will wait when a container first starts booting to start performing healthchecks on that target in seconds. Default is 120 seconds.
+    Default: 120
+  HealthCheckPath:
+    Type: String
+    Description: The health check path for your architecture. This should be a path that will return a "200" status code and nothing more. This is how the architecture will verify what containers are "Healthy" and which are "Unhealthy".
+    Default: /healthcheck
+  HealthCheckTimeoutSeconds:
+    Type: Number
+    Description: How many seconds to wait during each healthcheck to hear back a 200 status code. Must be smaller than the number given for "HealthCheckIntervalSeconds".
+    Default: 100
+  UnhealthyThresholdCount:
+    Type: Number
+    Description: How many health checks have to be failed in a row for a container to be considered "unhealthy". "Unhealthy" containers will be automatically rebooted.
+    Default: 5
+  HealthyThresholdCount:
+    Type: Number
+    Description: How many health checks have to be failed in a row for a container to be considered "healthy".
+    Default: 5
+########################HEALTHCHECK PARAMETERS START HERE########################
+
+########################CONTAINER NETWORKING PARAMETERS START HERE########################
+  VpcID:
+    Type: AWS::EC2::VPC::Id
+    Description: Keep in mind that all your subnets you select should belong to this VPC.
+  SubnetAForFargateTasks:
+    Type: AWS::EC2::Subnet::Id
+    Description: This is one of the subnets that will be used for Fargate tasks. This subnet should be from the VPC designated in the VpcID parameter. This should be from a different availability zone than the subnet designated in SubnetBForFargateTasks.
+  SubnetBForFargateTasks:
+    Type: AWS::EC2::Subnet::Id
+    Description: This is one of the subnets that will be used for Fargate tasks. This subnet should be from the VPC designated in the VpcID parameter. This should be from a different availability zone than the subnet designated in SubnetAForFargateTasks.
+  SubnetAForLoadBalancer:
+    Type: AWS::EC2::Subnet::Id
+    Description: This is one of the subnets that will be used for load balancer nodes. This subnet should be from the VPC designated in the VpcID parameter. This should be from a different availability zone than the subnet designated in SubnetBForLoadBalancer.
+  SubnetBForLoadBalancer:
+    Type: AWS::EC2::Subnet::Id
+    Description: This is one of the subnets that will be used for load balancer nodes. This subnet should be from the VPC designated in the VpcID parameter. This should be from a different availability zone than the subnet designated in SubnetAForLoadBalancer.
+  ContainerPort:
+    Type: Number
+    Description: The port on your containers/pods we're going to leave open to serve requests coming off the ALB. By default it's set to 80 (HTTP).
+    Default: 80
+  HostedZoneName:
+    Type: String
+    Description: The hosted zone name for your architecture. If this isn't a Hosted Zone in route53 for the account you're running this template in you'll get an error.
+    Default: ginkgobioworks.com
+  Subdomain:
+    Type: String
+    Description: The subdomain name for your architecture.
+    Default: myservice
+########################CONTAINER NETWORKING PARAMETERS START HERE########################
+
+########################HTTP OR HTTPS PARAMETERS START HERE######################
+  ToggleHTTPorHTTPS:
+    Type: String
+    Description: Choose HTTP or HTTPS. If you pick HTTP your load balancer will listen for incoming traffic on port 80. If you pick HTTPS your load balancer will listen for incoming traffic on port 443. If you pick HTTPS you must provide a valid argument for the "Certificate" parameter.
+    AllowedValues: ['HTTP', 'HTTPS']
+    Default: 'HTTP'
+  Certificate:
+    Type: String
+    Description: Update with the certificate ARN from Certificate Manager, which must exist in the same region if you'd like to use a certificate with your ALB. Leave placeholder if ToggleHTTPorHTTPS is set to HTTP as it will be ignored. If you pick HTTPS you must provide a valid argument for this parameter.
+    Default: 'arn:aws:acm:<region>:<account number>:certificate/<some identifer>'
+  ToggleMakeRedirect:
+    Type: String
+    Description: True for on; False for off. If True will make an ALB listener that fowards HTTP requests to your HTTPS endpoint provided you configured your load balancer to listen on port 443. If set to False no redirect will be made and requests coming on port 80 will be refused for ALBs listening on port 443.
+    AllowedValues: ['True', 'False']
+    Default: 'False'
+########################HTTP OR HTTPS PARAMETERS END HERE######################
+
+########################EXTRA IAM POLICY PARAMETERS START HERE########################
+  ToggleIncludeExtraIAMPolicyForTaskRole:
+    Type: String
+    Description: If True will attach the IAM policy ARN referred to in "ExtraIAMPolicyForTaskRole" to the task role for fargate tasks associated with this architecture. This toggle can be used to grant extra permissions to a Fluoride architecture's tasks (i.e. its containers) beyond those that are normally granted. This allows you to specify your own IAM policy and apply it.
+    AllowedValues: ['True', 'False']
+    Default: 'False'
+  ExtraIAMPolicyForTaskRole:
+    Type: String
+    Description: Extra IAM policy that will be attached if "ToggleIncludeExtraIAMPolicyForTaskRole" is set to True. Can be ignored if "ToggleIncludeExtraIAMPolicyForTaskRole" is set to False.
+    Default: "arn-of-extra-policy-goes-here"
+########################EXTRA IAM POLICY PARAMETERS END HERE########################
+
+########################TOGGLE PARAMETER FOR ALB STARTS HERE######################
+  ToggleMakeALBExternal:
+    Type: String
+    Description: True for on; False for off. If False ALB will have scheme set to internal. If True ALB will have scheme set to internet-facing. For more information on what this entails read about Scheme documentation here https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html#cfn-elasticloadbalancingv2-loadbalancer-ipaddresstype
+    AllowedValues: ['True', 'False']
+    Default: 'False'
+########################TOGGLE PARAMETER FOR ALB ENDS HERE########################
+
+########################TOGGLE PARAMETER FOR ECS EXEC STARTS HERE######################
+  ToggleAllowECSExec:
+    Type: String
+    Description: True for on; False for off. If False ECS exec will not be set up. If True ECS exec will be automatically configured and set up for the ECS cluster. Having ECS exec set up allows users to, among other things, start interactive sessions on their containers which can be useful for debugging purposes. If you're concerned about permissions in the account and you maybe don't have your IAM permissions locked down as much as you'd like then setting this to False might not be a horrible idea. For more info on ECS exec read here "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html".
+    AllowedValues: ['True', 'False']
+    Default: 'True'
+########################TOGGLE PARAMETER FOR ECS EXEC ENDS HERE########################
+
+########################CONDITION EVALUATION STARTS HERE########################
+Conditions:
+  WantsToMakeALBExternalFacing:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleMakeALBExternal
+  WantsHTTPS:
+    Fn::Equals:
+      - 'HTTPS'
+      - Ref: ToggleHTTPorHTTPS
+  WantsRedirect:
+    Fn::And:
+      - Fn::Equals:
+          - 'True'
+          - Ref: ToggleMakeRedirect
+      - Fn::Equals:
+          - 'HTTPS'
+          - Ref: ToggleHTTPorHTTPS
+  WantsAutogeneratedArchitectureTableName:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleAutogenerateTableName
+  WantsAutogeneratedArchitectureSecretsManagerName:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleAutogenerateSecretsManagerName
+  WantsAutogeneratedArchitectureBucketName:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleAutogenerateFluorideBucketName
+  WantsAutogeneratedALBLogBucketName:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleAutogenerateALBLogBucketName
+  WantsArchitectureTable:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleProvisionTable
+  WantsArchitectureBucket:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleProvisionFluorideBucket
+  WantsArchitectureSecretsManager:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleProvisionSecretsManager
+  WantsExtraPolicyForTaskRole:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleIncludeExtraIAMPolicyForTaskRole
+  WantsECSExec:
+    Fn::Equals:
+      - 'True'
+      - Ref: ToggleAllowECSExec
+########################CONDITION EVALUATION ENDS HERE########################
+
+########################REGION MAPPINGS START HERE########################
+Mappings:
+  RegionMap:
+    us-east-1:
+      PrincipalForALBLogging: "arn:aws:iam::127311923021:root"
+    us-east-2:
+      PrincipalForALBLogging: "arn:aws:iam::033677994240:root"
+    us-west-1:
+      PrincipalForALBLogging: "arn:aws:iam::027434742980:root"
+    us-west-2:
+      PrincipalForALBLogging: "arn:aws:iam::797873946194:root"
+    af-south-1:
+      PrincipalForALBLogging: "arn:aws:iam::098369216593:root"
+    ca-central-1:
+      PrincipalForALBLogging: "arn:aws:iam::985666609251:root"
+    eu-central-1:
+      PrincipalForALBLogging: "arn:aws:iam::054676820928:root"
+    eu-west-1:
+      PrincipalForALBLogging: "arn:aws:iam::156460612806:root"
+    eu-west-2:
+      PrincipalForALBLogging: "arn:aws:iam::652711504416:root"
+    eu-south-1:
+      PrincipalForALBLogging: "arn:aws:iam::635631232127:root"
+    eu-west-3:
+      PrincipalForALBLogging: "arn:aws:iam::009996457667:root"
+    eu-north-1:
+      PrincipalForALBLogging: "arn:aws:iam::897822967062:root"
+    ap-east-1:
+      PrincipalForALBLogging: "arn:aws:iam::754344448648:root"
+    ap-northeast-1:
+      PrincipalForALBLogging: "arn:aws:iam::582318560864:root"
+    ap-northeast-2:
+      PrincipalForALBLogging: "arn:aws:iam::600734575887:root"
+    ap-northeast-3:
+      PrincipalForALBLogging: "arn:aws:iam::383597477331:root"
+    ap-southeast-1:
+      PrincipalForALBLogging: "arn:aws:iam::114774131450:root"
+    ap-southeast-2:
+      PrincipalForALBLogging: "arn:aws:iam::783225319266:root"
+    ap-south-1:
+      PrincipalForALBLogging: "arn:aws:iam::718504428378:root"
+    me-south-1:
+      PrincipalForALBLogging: "arn:aws:iam::076674570225:root"
+    sa-east-1:
+      PrincipalForALBLogging: "arn:aws:iam::507241528517:root"
+    us-gov-west-1:
+      PrincipalForALBLogging: "arn:aws:iam::048591011584:root"
+    us-gov-east-1:
+      PrincipalForALBLogging: "arn:aws:iam::190560391635:root"
+    cn-north-1:
+      PrincipalForALBLogging: "arn:aws:iam::638102146993:root"
+    cn-northwest-1:
+      PrincipalForALBLogging: "arn:aws:iam::037604701340:root"
+########################REGION MAPPINGS START HERE########################
+
+Resources:
+########################CREATION OF S3 BUCKETS FOR FLUORIDE STARTS HERE########################
+  FluorideArchitectureBucket:
+    Type: AWS::S3::Bucket
+    Condition: WantsArchitectureBucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      BucketName: !If [WantsAutogeneratedArchitectureBucketName, !Ref "AWS::NoValue", !Ref FluorideBucket]
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: InfrequentAccessRule
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: STANDARD_IA
+      Tags:
+        - Key: Team
+          Value: !Ref TeamName
+        - Key: Contact
+          Value: !Ref ContactEmail
+        - Key: Workloadtype
+          Value: !Ref WorkloadValue
+        - Key: Project
+          Value: !Ref ProjectName
+########################CREATION OF S3 BUCKETS FOR FLUORIDE ENDS HERE########################
+
+########################CREATION OF S3 BUCKETS FOR LOGGING STARTS HERE########################
+  ALBLogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      BucketName: !If [WantsAutogeneratedALBLogBucketName, !Ref "AWS::NoValue", !Ref ALBLogS3Bucket]
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: InfrequentAccessRule
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: STANDARD_IA
+          - Id: ExpirationRule
+            Status: Enabled
+            ExpirationInDays: !Ref DaysToKeepALBLogs
+      Tags:
+        - Key: Team
+          Value: !Ref TeamName
+        - Key: Contact
+          Value: !Ref ContactEmail
+        - Key: Workloadtype
+          Value: !Ref WorkloadValue
+        - Key: Project
+          Value: !Ref ProjectName
+  ALBLogBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    DependsOn: ALBLogBucket
+    Properties:
+      Bucket: !Ref ALBLogBucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 's3:PutObject'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ALBLogBucket
+                - /
+                - !Ref MicroServiceName
+                - /
+                - 'AWSLogs'
+                - /
+                - !Ref "AWS::AccountId"
+                - /*
+            Principal:
+              AWS: !FindInMap [RegionMap, !Ref "AWS::Region", 'PrincipalForALBLogging']
+          - Action:
+              - 's3:PutObject'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ALBLogBucket
+                - /
+                - !Ref MicroServiceName
+                - /
+                - 'AWSLogs'
+                - /
+                - !Ref "AWS::AccountId"
+                - /*
+            Principal:
+              Service: "delivery.logs.amazonaws.com"
+            Condition:
+              StringEquals:
+                's3:x-amz-acl': "bucket-owner-full-control"
+          - Action:
+              - 's3:GetBucketAcl'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ALBLogBucket
+            Principal:
+              Service: "delivery.logs.amazonaws.com"
+########################CREATION OF S3 BUCKETS FOR LOGGING ENDS HERE########################
+
+########################CREATION OF SECRET MANAGER SECRETS STORE SETUP STARTS HERE########################
+  SecretManagerStore:
+    Type: 'AWS::SecretsManager::Secret'
+    Condition: WantsArchitectureSecretsManager
+    Properties:
+      Name: !If [WantsAutogeneratedArchitectureSecretsManagerName, !Ref "AWS::NoValue", !Ref SecretsManagerName]
+      SecretString: '{"instructions.txt":"SGVsbG8hCgpUaGlzIGlzIGFuIGV4YW1wbGUgb2YgYSB0ZXh0IGZpbGUgZW5jb2RlZCBpbiBiYXNlNjQuCgpQbGVhc2UgZG8gbm90IHdpcGUgb3V0IGFsbCBvZiB0aGUgZmllbGRzIGluIHRoZSBzZWNyZXRzIHN0b3JlIGFzIHRoaXMgd2lsbCBjYXVzZSBhbiBlcnJvci4KCklmIHlvdSBkb24ndCB3YW50IHRvIHVzZSBzZWNyZXRzIG1hbmFnZXIgdG8gc3RvcmUgYXV0aCBmaWxlcyB0aGVuIGZlZWwgZnJlZSB0byBsZWF2ZSB0aGlzIG9yIGFub3RoZXIgcGxhY2Vob2xkZXIgYmFzZTY0IGVuY29kZWQgZmlsZSBoZXJlIGluIGl0cyBwbGFjZS4KCkkgcmVhbGx5IGhvcGUgdGhpcyBhcmNoaXRlY3R1cmUgaXMgdXNlZnVsIGZvciB5b3UgYW5kIHRoYXQgeW91IGdldCBhIGxvdCBvdXQgb2YgaXQuIEEgbG90IG9mIHdvcmsgd2VudCBpbnRvIHRoaXMuCgpJZiB5b3UgaGF2ZSBhbnkgcXVlc3Rpb24gZmVlbCBmcmVlIHRvIHJlYWNoIG91dCBhdCBhbnl0aW1lLgoKQWxsIHRoZSBCZXN0LApKYWNvYiBNZXZvcmFjaAoKUC5TLjogSW4gY2FzZSB5b3UncmUgZnJvbSB0aGUgZnV0dXJlOyBoZWxsbyBmdXR1cmUhIFRoZSB5ZWFyIGlzIDIwMjAsIHRoZSBtb250aCBpcyBBcHJpbCBhbmQgd2UncmUgYWxsIHN0dWNrIGF0IGhvbWUgYmVjYXVzZSBvZiB0aGUgQ29yb25hdmlydXMuCg=="}'
+########################CREATION OF SECRET MANAGER SECRETS STORE SETUP ENDS HERE########################
+
+########################CREATION OF DYNAMO DB STARTS HERE########################
+  FluorideDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Condition: WantsArchitectureTable
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: !Ref TablePrimaryKey
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: !Ref TablePrimaryKey
+          KeyType: "HASH"
+      BillingMode: "PAY_PER_REQUEST"
+      SSESpecification:
+        SSEEnabled: true
+      TableName: !If [WantsAutogeneratedArchitectureTableName, !Ref "AWS::NoValue", !Ref TableName]
+      Tags:
+        - Fn::If:
+          - WantsAutogeneratedArchitectureTableName
+          - !Ref "AWS::NoValue"
+          - Key: Name
+            Value: !If [WantsAutogeneratedArchitectureTableName, !Ref FluorideDynamoDB, !Ref TableName]
+        - Key: Team
+          Value: !Ref TeamName
+        - Key: Contact
+          Value: !Ref ContactEmail
+        - Key: Workloadtype
+          Value: !Ref WorkloadValue
+        - Key: Project
+          Value: !Ref ProjectName
+      TimeToLiveSpecification:
+        AttributeName: !Ref TableTTLKey
+        Enabled: True
+########################CREATION OF DYNAMO DB ENDS HERE########################
+
+########################CREATION OF ECS/FARGATE SETUP STARTS HERE########################
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Join ['', [!Ref MicroServiceName, Cluster]]
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    DependsOn: LogGroup
+    Properties:
+      Family: !Join ['', [!Ref MicroServiceName, TaskDefinition]]
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: !Ref CPU
+      Memory: !Ref RAM
+      ExecutionRoleArn: !Ref ExecutionRole
+      TaskRoleArn: !Ref TaskRole
+      ContainerDefinitions:
+        - Name: !Ref MicroServiceName
+          Image: !Ref Image
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+          LinuxParameters:
+            InitProcessEnabled: true
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs
+          Environment:
+            - Name: fluoride_dynamodb_table_ttl_key
+              Value: !If [WantsArchitectureTable, !Ref TableTTLKey, "not_provisioned"]
+            - Name: fluoride_dynamodb_table_primary_key
+              Value: !If [WantsArchitectureTable, !Ref TablePrimaryKey, "not_provisioned"]
+            - Name: fluoride_dynamodb_table
+              Value: !If [WantsArchitectureTable, !Ref FluorideDynamoDB, "not_provisioned"]
+            - Name: fluoride_s3_bucket
+              Value: !If [WantsArchitectureBucket, !Ref FluorideArchitectureBucket, "not_provisioned"]
+            - Name: fluoride_secrets_manager
+              Value: !If [WantsArchitectureSecretsManager, !Ref SecretManagerStore, "not_provisioned"]
+            - Name: fluoride_architecture_region
+              Value: !Ref "AWS::Region"
+            - Name: fluoride_architecture_account_id
+              Value: !Ref "AWS::AccountId"
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref MicroServiceName, ExecutionRole]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref MicroServiceName, TaskRole]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: "/"
+      Policies:
+        - Fn::If:
+          - WantsArchitectureBucket
+          - PolicyName: AllowAccesstoS3Bucket
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:DeleteObject
+                    - s3:DeleteObjectVersion
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:GetObjectAcl
+                    - s3:PutObject
+                    - s3:PutObjectAcl
+                    - s3:ListObjectsV2
+                    - s3:ListBucket
+                    - s3:GetBucketLocation
+                  Resource: !GetAtt FluorideArchitectureBucket.Arn
+          - !Ref "AWS::NoValue"
+        - Fn::If:
+          - WantsArchitectureBucket
+          - PolicyName: AllowAccesstoS3BucketContents
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:DeleteObject
+                    - s3:DeleteObjectVersion
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:GetObjectAcl
+                    - s3:PutObject
+                    - s3:PutObjectAcl
+                    - s3:ListObjectsV2
+                    - s3:ListBucket
+                    - s3:GetBucketLocation
+                  Resource: !Join ['',[!GetAtt FluorideArchitectureBucket.Arn,'/*']]
+          - !Ref "AWS::NoValue"
+        - PolicyName: LoggingRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+        - Fn::If:
+          - WantsArchitectureSecretsManager
+          - PolicyName: AllowAccessToSecretsStore
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - secretsmanager:GetResourcePolicy
+                    - secretsmanager:GetSecretValue
+                    - secretsmanager:DescribeSecret
+                    - secretsmanager:ListSecretVersionIds
+                  Resource: !Ref SecretManagerStore
+          - !Ref "AWS::NoValue"
+        - Fn::If:
+          - WantsArchitectureTable
+          - PolicyName: AllowDynamoDB
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:BatchGetItem
+                    - dynamodb:BatchWriteItem
+                    - dynamodb:ConditionCheckItem
+                    - dynamodb:PutItem
+                    - dynamodb:DescribeTable
+                    - dynamodb:DeleteItem
+                    - dynamodb:GetItem
+                    - dynamodb:Scan
+                    - dynamodb:Query
+                    - dynamodb:UpdateItem
+                  Resource: !GetAtt FluorideDynamoDB.Arn
+          - !Ref "AWS::NoValue"
+        - Fn::If:
+          - WantsECSExec
+          - PolicyName: AllowSSMAccessForECSExec
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ssmmessages:CreateControlChannel
+                    - ssmmessages:CreateDataChannel
+                    - ssmmessages:OpenControlChannel
+                    - ssmmessages:OpenDataChannel
+                  Resource: '*'
+          - !Ref "AWS::NoValue"
+      ManagedPolicyArns: !If [WantsExtraPolicyForTaskRole, [!Ref ExtraIAMPolicyForTaskRole,'arn:aws:iam::aws:policy/AmazonRoute53ReadOnlyAccess'], ['arn:aws:iam::aws:policy/AmazonRoute53ReadOnlyAccess']]
+  AutoScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref MicroServiceName, AutoScalingRole]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole'
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Join ['', [!Ref MicroServiceName, ContainerSecurityGroup]]
+      VpcId: !Ref VpcID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Join ['', [!Ref MicroServiceName, LoadBalancerSecurityGroup]]
+      VpcId: !Ref VpcID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !If [WantsHTTPS, 443, 80]
+          ToPort: !If [WantsHTTPS, 443, 80]
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: udp
+          FromPort: !If [WantsHTTPS, 443, 80]
+          ToPort: !If [WantsHTTPS, 443, 80]
+          CidrIp: 0.0.0.0/0
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - ListenerHTTPorHTTPS
+    Properties:
+      Cluster: !Ref Cluster
+      TaskDefinition: !Ref TaskDefinition
+      DeploymentConfiguration:
+        DeploymentCircuitBreaker:
+          Enable: True
+          Rollback: True
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 2
+      EnableExecuteCommand: !If [WantsECSExec, true, false]
+      HealthCheckGracePeriodSeconds: !Ref HealthCheckGracePeriodSeconds
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - !Ref SubnetAForFargateTasks
+            - !Ref SubnetBForFargateTasks
+          SecurityGroups:
+            - !Ref ContainerSecurityGroup
+      LoadBalancers:
+        - ContainerName: !Ref MicroServiceName
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !Ref TargetGroup
+
+########################CREATION OF ECS/FARGATE SETUP ENDS HERE########################
+
+########################CREATION OF ALB SETUP STARTS HERE########################
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: !Ref HealthCheckIntervalSeconds
+      HealthCheckPath: !Ref HealthCheckPath
+      HealthCheckTimeoutSeconds: !Ref HealthCheckTimeoutSeconds
+      UnhealthyThresholdCount: !Ref UnhealthyThresholdCount
+      HealthyThresholdCount: !Ref HealthyThresholdCount
+      Port: !Ref ContainerPort
+      Protocol: HTTP
+      TargetType: ip
+      VpcId: !Ref VpcID
+  ListenerHTTPorHTTPS:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: !If [WantsHTTPS, 443, 80]
+      Protocol: !If [WantsHTTPS, HTTPS, HTTP]
+      Certificates:
+        - CertificateArn: !If [WantsHTTPS, !Ref Certificate, !Ref "AWS::NoValue"]
+  OptionalRedirectListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Condition: WantsRedirect
+    Properties:
+      DefaultActions:
+        - RedirectConfig:
+            Host: "#{host}"
+            Path: "/#{path}"
+            Port: 443
+            Protocol: "HTTPS"
+            Query: "#{query}"
+            StatusCode: HTTP_301
+          Type: redirect
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: !If [WantsToMakeALBExternalFacing, "internet-facing", "internal"]
+      LoadBalancerAttributes:
+        - Key: access_logs.s3.enabled
+          Value: true
+        - Key: access_logs.s3.bucket
+          Value: !Ref ALBLogBucket
+        - Key: access_logs.s3.prefix
+          Value: !Ref MicroServiceName
+        - Key: idle_timeout.timeout_seconds
+          Value: !Ref ALBIdleTimeout
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Subnets:
+        - !Ref SubnetAForLoadBalancer
+        - !Ref SubnetBForLoadBalancer
+      Type: application
+########################CREATION OF ALB SETUP ENDS HERE########################
+
+########################CREATION OF DNS SETUP STARTS HERE########################
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Join ['', [!Ref HostedZoneName, .]]
+      Name: !Join ['', [!Ref Subdomain, ., !Ref HostedZoneName, .]]
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt LoadBalancer.DNSName
+        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  ########################CREATION OF DNS SETUP ENDS HERE########################
+
+########################CREATION OF LOG GROUP SETUP STARTS HERE########################
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['', [/ecs/, !Ref MicroServiceName, TaskDefinition]]
+########################CREATION OF LOG GROUP SETUP ENDS HERE########################
+
+########################CREATION OF AUTOSCALING SETUP STARTS HERE########################
+  AutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: !Ref MinContainers
+      MaxCapacity: !Ref MaxContainers
+      ResourceId: !Join ['/', [service, !Ref Cluster, !GetAtt Service.Name]]
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      RoleARN: !GetAtt AutoScalingRole.Arn
+  AutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: !Join ['', [!Ref MicroServiceName, AutoScalingPolicy]]
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref AutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        ScaleInCooldown: !Ref ScaleInCooldown
+        ScaleOutCooldown: !Ref ScaleOutCooldown
+        TargetValue: !Ref AutoScalingTargetValue
+########################CREATION OF AUTOSCALING SETUP ENDS HERE########################
+
+########################CREATION OF USER INTERFACE SETUP STARTS HERE########################
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: "Name Your Microservice: Name for your microservice here."
+        Parameters:
+          - MicroServiceName
+      -
+        Label:
+          default: "Tagging Parameters: Any place where tags can be attached we will attach these tags."
+        Parameters:
+          - ProjectName
+          - TeamName
+          - ContactEmail
+          - WorkloadValue
+      -
+        Label:
+          default: "Docker Image Parameters: Specify a docker repository to pull from."
+        Parameters:
+          - Image
+      -
+        Label:
+          default: "ALB Idle Timeout Parameter: Control the idle timeout behavior for this architecture's ALB."
+        Parameters:
+          - ALBIdleTimeout
+      -
+        Label:
+          default: "DynamoDB Table Parameters: Give a name to the DynamoDB and its primary key that will be associated with this architecture."
+        Parameters:
+          - TableName
+          - TablePrimaryKey
+          - TableTTLKey
+          - ToggleProvisionTable
+          - ToggleAutogenerateTableName
+      -
+        Label:
+          default: "Secrets Manager Parameters: Give a name to the secret store that will be associated with this architecture."
+        Parameters:
+          - SecretsManagerName
+          - ToggleProvisionSecretsManager
+          - ToggleAutogenerateSecretsManagerName
+      -
+        Label:
+          default: "Logging Parameters: Use these parameters to control the logging behaviors of this architecture."
+        Parameters:
+          - ALBLogS3Bucket
+          - DaysToKeepALBLogs
+          - ToggleAutogenerateALBLogBucketName
+      -
+        Label:
+          default: "S3 Parameters: Give a name to the S3 bucket that will be associated with this architecture."
+        Parameters:
+          - FluorideBucket
+          - ToggleProvisionFluorideBucket
+          - ToggleAutogenerateFluorideBucketName
+      -
+        Label:
+          default: "Autoscaling Parameters: Customize the autoscaling attributes of your architecture!"
+        Parameters:
+          - MinContainers
+          - MaxContainers
+          - AutoScalingTargetValue
+          - ScaleInCooldown
+          - ScaleOutCooldown
+      -
+        Label:
+          default: "CPU&RAM Parameters: Each of your containers will get these resources to use with tasks!"
+        Parameters:
+          - CPU
+          - RAM
+      -
+        Label:
+          default: "Healthcheck Parameters: Parameters to use to customize Healthcheck behavior for your architecture!"
+        Parameters:
+          - HealthCheckIntervalSeconds
+          - HealthCheckGracePeriodSeconds
+          - HealthCheckPath
+          - HealthCheckTimeoutSeconds
+          - UnhealthyThresholdCount
+          - HealthyThresholdCount
+      -
+        Label:
+          default: "Container Networking Parameters: Use these parameters to control the networking setup for your architecture."
+        Parameters:
+          - VpcID
+          - SubnetAForFargateTasks
+          - SubnetBForFargateTasks
+          - SubnetAForLoadBalancer
+          - SubnetBForLoadBalancer
+          - ContainerPort
+          - HostedZoneName
+          - Subdomain
+      -
+        Label:
+          default: "HTTP/HTTPS Parameters: Parameters for choosing between setting up a HTTP or HTTPS microservice."
+        Parameters:
+          - ToggleHTTPorHTTPS
+          - Certificate
+          - ToggleMakeRedirect
+      -
+        Label:
+          default: "Extra IAM Policy For Task Role Parameters: If you want to grant extra permissions to a Fluoride architecture's tasks (i.e. its containers) beyond those that are normally granted you can edit these parameters (otherwise you can ignore these parameters)."
+        Parameters:
+          - ToggleIncludeExtraIAMPolicyForTaskRole
+          - ExtraIAMPolicyForTaskRole
+      -
+        Label:
+          default: "Toggle Parameter for ALB: Choose whether or not you'd like your ALB to be internal or internet-facing."
+        Parameters:
+          - ToggleMakeALBExternal
+    ParameterLabels:
+      MicroServiceName:
+        default: "Give a 21 character or less name to your microservice!"
+      AutoScalingTargetValue:
+        default: "A positive integer representing the CPU utilization that the autoscaling policy will try to target."
+########################CREATION OF USER INTERFACE SETUP ENDS HERE########################
+
+########################OUTPUTS START HERE########################
+Outputs:
+  Endpoint:
+    Description: Endpoint for our microservice.
+    Value: !Join ['', [!If [WantsHTTPS, 'https://', 'http://'], !Ref DNSRecord]]
+  Cluster:
+    Description: The name of our ECS cluster. To be used in calls to aws ecs update-service to force updates to our service from our CLI!
+    Value: !Ref Cluster
+  ServiceName:
+    Description: The name of our ECS service. To be used in calls to aws ecs update-service to force updates to our service from our CLI!
+    Value: !GetAtt Service.Name
+  DockerImagePath:
+    Description: The path to the docker image this architecture pulls from. It can be in ECR or elsewhere.
+    Value: !Ref Image
+  LoadBalancerDNSName:
+    Description: DNS name for our loadbalancer.
+    Value: !GetAtt LoadBalancer.DNSName
+  TargetGroupARN:
+    Description: ARN of our ALB target group.
+    Value: !Ref TargetGroup
+  TaskDefinitionARN:
+    Description: ARN of our task definition.
+    Value: !Ref TaskDefinition
+########################OUTPUTS END HERE########################

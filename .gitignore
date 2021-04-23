@@ -1,0 +1,8 @@
+.DS_Store
+fluoride_cli.egg-info/
+fluoride_cli/__pycache__/
+fluoride_cli/temp_store/
+fluoride_cli/current_fluoride_profile_config.txt
+fluoride_cli/testing
+fluoride_cli/microserviceA
+fluoride_cli/microserviceB
