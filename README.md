@@ -10,20 +10,20 @@ Fluoride is a one stop shop for setting up, deploying and managing your micro se
 
 Developers of micro services frameworks have not always done the best job at making these broadly accessible to people. Fluoride wants to be as accessible as it possibly can while still being as performant as possible. To that end if you can write a container, make command line interface calls, and fill out a cloudformation template then you, the reader of this document, can set up your own highly performant and scalable micro service. We don't ask that you bring anything else to the table to get started with Fluoride.
 
-Fluoride is a CloudFormation template and an accompanying custom made CLI. The Fluoride architecture allows for automatic, scalable and easy execution of arbitrary container code for micro services workflows. 
+Fluoride is a CloudFormation template and an accompanying custom made CLI. The Fluoride architecture allows for automatic, scalable and easy execution of arbitrary container code for micro services workflows.
 
-A whole architecture can be built or deleted in under 10 minutes. You can build architectures in parallel at the same time in AWS with CloudFormation. The CloudFormation template it uses is self-contained, so it requires no external dependencies like lambda code or layers to be stored in S3 buckets. 
+A whole architecture can be built or deleted in under 10 minutes. You can build architectures in parallel at the same time in AWS with CloudFormation. The CloudFormation template it uses is self-contained, so it requires no external dependencies like lambda code or layers to be stored in S3 buckets.
 
 ## Project Mission
 
 ![Ginkgo-Bioworks-Logo](pictures/ginkgo_logo.png)
 
-Fluoride is designed as a general microservices framework. Its purpose is to provide a framework that's easy to use, highly performant and easy to service. At the outset of the project the goal was to provide improved performance to our users while also reducing our own support burden associated with the way we currently handle micro services architectures. Also it should be noted that writing micro services in Fluoride automatically ensures a lot of best practices are followed. 
+Fluoride is designed as a general microservices framework. Its purpose is to provide a framework that's easy to use, highly performant and easy to service. At the outset of the project the goal was to provide improved performance to our users while also reducing our own support burden associated with the way we currently handle micro services architectures. Also it should be noted that writing micro services in Fluoride automatically ensures a lot of best practices are followed.
 
 ## The Architecture
 ![Fluoride-Architecture-Picture](pictures/fluoride_architecture.png)
 
-Filling out the Fluoride cloudformation will stand up an autoscaling Fargate cluster that will run your code and will scale up or down automatically as is needed. As long as you choose sensible hosted zones in route53 for your microservices (which you select in the template). Each service that gets stood up is a HTTP or HTTPS endpoint and you can talk to them either within a VPC or over the internet the same way you'd talk to any other API and you can chain together as many of these as you'd like both within a single account or across multiple accounts. It's economical and even during a deployment because of how the rolling deployments are managed you get zero downtime in an already up and running microservice. 
+Filling out the Fluoride cloudformation will stand up an autoscaling Fargate cluster that will run your code and will scale up or down automatically as is needed. As long as you choose sensible hosted zones in route53 for your microservices (which you select in the template). Each service that gets stood up is a HTTP or HTTPS endpoint and you can talk to them either within a VPC or over the internet the same way you'd talk to any other API and you can chain together as many of these as you'd like both within a single account or across multiple accounts. It's economical and even during a deployment because of how the rolling deployments are managed you get zero downtime in an already up and running microservice.
 
 It even will automatically roll back to your last deployment if the new deployment fails to result in containers that pass health checks and you can still get zero downtime in this case provided your last deployment was functional! Also there's no need for multi-container configurations for attached object storage or databases because you have an attached DynamoDB and S3 instance that you can hammer to your heart's content for scalable and performant key-value and object storage (although we do support multi-container environments and you could still do that if you wanted to). Also you have ridiculous throughput because it's an autoscaling Fargate cluster situated behind an ALB which can serve millions of request per seconds. The CLI is easy to use and with a few commands and filling out a Cloudformation template you are ready to go!
 
@@ -42,7 +42,7 @@ And that's it.
 ### Big Picture Philosophy Behind the CLI
 The whole idea with Fluoride is that the cloudformation takes care of the infrastructure and all you have to worry about is your code. To that end the CLI should take care of everything that involves deploying new code to the architecture and checking the health of your infrastructure.
 
-### Dependencies 
+### Dependencies
 
 To use Fluoride CLI, you must install and configure the following command line tools:
 - [awscli]
@@ -64,7 +64,7 @@ You can uninstall fluoride_cli with the following steps/commands:
   * run `pip uninstall fluoride_cli`
 
 ### Using the CLI in Gitlab CI/CD
-You can put the following six lines of code in any gitlab CI/CD job to install the Fluoride cli and use it for the rest of the job. It adds less than 20 seconds to a build step to include these lines in my experience. 
+You can put the following six lines of code in any gitlab CI/CD job to install the Fluoride cli and use it for the rest of the job. It adds less than 20 seconds to a build step to include these lines in my experience.
 ```
     - git clone https://github.com/ginkgobioworks/fluoride
     - cd fluoride
@@ -88,7 +88,7 @@ Takes a local image in docker specified as "${image_name}:${image_tag}" and push
 Takes a specified folder containing either a "Dockerfile" or "Dockerfile.txt" (but not both) and uses the contents in that folder to build and push a workflow container to an elastic container registry.
 
 **execute_command**
-Targets a Fluoride Cloudformation stack and pulls some information from the stack which it uses to grab a Fargate container and interactively execute a command on said container. By default this command is '/bin/sh' (i.e. gives user command line access on most containers) but this command can be set to whatever you'd like. You can also target any container you'd like in a multi-container environment as it's named in the task definition (will be "container_from_Image<n>" where "<n>" is the container specified by the Image<n> parameter in the multi-container CloudFormation template). 
+Targets a Fluoride Cloudformation stack and pulls some information from the stack which it uses to grab a Fargate container and interactively execute a command on said container. By default this command is '/bin/sh' (i.e. gives user command line access on most containers) but this command can be set to whatever you'd like. You can also target any container you'd like in a multi-container environment as it's named in the task definition (will be "container_from_ImageN" where "N" is the container specified by the ImageN parameter in the multi-container CloudFormation template).
 
 **update_stack**
 Targets a Fluoride Cloudformation stack and triggers an update. Will cause the architecture to pull the newest container for tasks from the given path/tag. It will bring up tasks with the new containers, wait for them to be healthy and then drain connections from the current tasks to the new ones. This basically is the command you can use to trigger a new deployment.
@@ -120,7 +120,7 @@ Deletes the profile name specified from your system.
 **where_am_i**
 Prints out the directory where you profile files are located. If you drag new profiles into this directory they will be automatically imported into the CLI and you can export profile files from this directory to other installations of the CLI.
 
-**clear_profile_config** 
+**clear_profile_config**
 Clears your current default profile if you have one set and makes it so you have no profile currently selected as a default.
 
 **set_profile**
@@ -153,7 +153,7 @@ Options:
 
   --local_image_to_push TEXT      The name of a local image you'd like to push
                                   to ECR. Specify in the following manner:
-                                  '<image>:<tag>'.
+                                  'image:tag'.
 
   --path_to_docker_folder TEXT    Path to the folder on your local machine
                                   that contains a 'Dockerfile.txt' at minimum.
@@ -222,7 +222,7 @@ Options:
   --help                          Show this message and exit.
 
 ### Interactive Sessions
-Using the fluoride_cli you can start interactive sessions on your containers for debugging purposes using the "execute_command" command. 
+Using the fluoride_cli you can start interactive sessions on your containers for debugging purposes using the "execute_command" command.
 
 With this feature you can interactively execute '/bin/sh' on a container in a single container environment as seen below.
 
@@ -232,12 +232,12 @@ You can also change the default command that gets interactively executed to be w
 
 ![Ginkgo-Bioworks-Logo](pictures/python_execute_command_example.png)
 
-And you can also interactively execute sessions on specific containers in multi container environments by specifying the name of the container you'd like to execute against. In Fluoride multi-container environments containers are named "container_from_Image<n>" where "<n>" is the container specified by the Image<n> parameter in the multi-container CloudFormation template.
+And you can also interactively execute sessions on specific containers in multi container environments by specifying the name of the container you'd like to execute against. In Fluoride multi-container environments containers are named "container_from_ImageN" where "N" is the container specified by the ImageN parameter in the multi-container CloudFormation template.
 
 ![Ginkgo-Bioworks-Logo](pictures/specific_container_execute_command_example.png)
 
 ### Using List Arguments With the CLI
-Sometimes you want to easily manage a multi-container micro service in Fluoride. Rather than having to make multiple CLI calls with different arguments each time to do this we wanted to make it so that relevant commands could iterate through list type inputs and manage as many containers as you'd want. To this end 
+Sometimes you want to easily manage a multi-container micro service in Fluoride. Rather than having to make multiple CLI calls with different arguments each time to do this we wanted to make it so that relevant commands could iterate through list type inputs and manage as many containers as you'd want. To this end
 
 The following commands can work with list based inputs.
 
@@ -275,13 +275,13 @@ Assuming role is a concept you should be aware of when using the Fluoride CLI. I
 
 Basically the way many AWS environments are set up is that you'd have real AWS IAM accounts located in a root account and everything else you do in any other account that's part of the same organization is done via a role. This in-general is known as a "multi-account strategy" in AWS speak because you have one root account that contains peoples IAM accounts and every other account is accessed via roles that the IAM accounts have permissions to assume. A role is basically a certain collection of permissions and when you "assume" a role you gain access to the permissions that role describes (they're all basically a collection of JSONs that say what you can and can't do in an AWS account).
 
-The Fluoride CLI is designed to be able to operate in all AWS environments and to do this securely it borrows the credentials stored in the official AWS CLI you should have co-installed on a computer where you're using the CLI. If you have the AWS CLI installed and you run "aws configure" it's going to ask you to put in an "AWS Access Key ID" and "AWS Secret Access Key" (and a default region you'd want to operate in for commands which you should fill out) (here's official documentation on how to configure the CLI from AWS themselves: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html). 
+The Fluoride CLI is designed to be able to operate in all AWS environments and to do this securely it borrows the credentials stored in the official AWS CLI you should have co-installed on a computer where you're using the CLI. If you have the AWS CLI installed and you run "aws configure" it's going to ask you to put in an "AWS Access Key ID" and "AWS Secret Access Key" (and a default region you'd want to operate in for commands which you should fill out) (here's official documentation on how to configure the CLI from AWS themselves: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 
 All that Fluoride CLI does on the back end is use boto3 and the aws cli both of which share the same credentials. Fluoride CLI will try to assume role into another account if you have the aws CLI configured with credentials set up for one account and you ask it to try to do something in another account. Fluoride CLI comes with a bunch of different ways to interact with roles so you can use it in pretty much any way you'd realistically need/want to. While fluoride_cli by default assumes a multi-account strategy for much of its defaults it can work with pretty much any account setup and I'd like to go through all the different ways you can work with roles so you can see all the different ways you can alter how you approach usage of the fluoride_cli to make it work with however you have your accounts setup.
 
 #### Assuming Role Without Using MFA
-  * __Why Would You Do This?__ If you have your AWS CLI set up to use your account credentials in the root account and you want to assume role into another account and your credentials don't require you to use MFA (multi factor authentication) to do this. 
-  * __How Would You Do This?__ If you do not specify the --mfa_token, --serial_number, or --dont_assume (by default it is set to False) flags Fluoride_CLI will by default try to assume role into another account should it need to using the role specified by the --role_to_assume_to_target_account flag. 
+  * __Why Would You Do This?__ If you have your AWS CLI set up to use your account credentials in the root account and you want to assume role into another account and your credentials don't require you to use MFA (multi factor authentication) to do this.
+  * __How Would You Do This?__ If you do not specify the --mfa_token, --serial_number, or --dont_assume (by default it is set to False) flags Fluoride_CLI will by default try to assume role into another account should it need to using the role specified by the --role_to_assume_to_target_account flag.
 
 #### Assuming Role Using MFA
   * __Why Would You Do This?__ If you have your AWS CLI set up to use your account credentials in the root account and you want to assume role into another account and your credentials require you to use MFA (multi factor authentication) to do this.
