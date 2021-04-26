@@ -47,7 +47,7 @@ The whole idea with Fluoride is that the cloudformation takes care of the infras
 To use Fluoride CLI, you must install and configure the following command line tools:
 - [awscli]
 ---> download awscli with the following command: "pip install awscli"
----> then run "awscli configure" and fill out the forms the command line tool presents to you.
+---> then run "aws configure" and fill out the forms the command line tool presents to you.
 - [docker]
 - [git]
 
