@@ -402,7 +402,7 @@ Resources:
             Status: Enabled
             Transitions:
               - TransitionInDays: 30
-                StorageClass: STANDARD_IA
+                StorageClass: INTELLIGENT_TIERING
       Tags:
         - Key: Team
           Value: !Ref TeamName
@@ -437,7 +437,7 @@ Resources:
             Status: Enabled
             Transitions:
               - TransitionInDays: 30
-                StorageClass: STANDARD_IA
+                StorageClass: INTELLIGENT_TIERING
           - Id: ExpirationRule
             Status: Enabled
             ExpirationInDays: !Ref DaysToKeepALBLogs
