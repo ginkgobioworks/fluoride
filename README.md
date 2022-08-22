@@ -312,7 +312,7 @@ All that Fluoride CLI does on the back end is use boto3 and the aws cli both of 
 ## Helpful Environment Variables
 The following environment variables are encoded automatically for you in all of your containers and can be used to help generalize and more easily write useful code that interfaces with other part of your architecture.
   * __fluoride_dynamodb_table_ttl_key__ - The TTL key for the DynamoDB for your architecture.
-  * __fluoride_dynamodb_table_primary_key__ - The primary key for the DyanmoDB for your architecture.
+  * __fluoride_dynamodb_table_primary_key__ - The primary key for the DynamoDB for your architecture.
   * __fluoride_dynamodb_table__ - A path to a DynamoDB table your containers can read and write to.
   * __fluoride_s3_bucket__ - The name of a S3 bucket that your containers can read and write to.
   * __fluoride_secrets_manager__ - The name of a secrets manager store your containers have permissions to read from.
